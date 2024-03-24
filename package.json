@@ -17,6 +17,8 @@
     "vue-router": "^4.3.0"
   },
   "devDependencies": {
+    "axios": "^1.6.8",
+    "cheerio": "^1.0.0-rc.12",
     "vite-plugin-vuetify": "^2.0.3",
     "vuetify": "^3.5.11"
   }
