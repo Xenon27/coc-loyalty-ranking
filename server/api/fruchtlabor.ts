@@ -1,8 +1,14 @@
 import cheerio from "cheerio";
 import axios from "axios";
 
-export default defineEventHandler(() => {
-  return performScrapingClans();
+export default defineEventHandler(async () => {
+  const results = await performScrapingClans();
+  for (const result of results) {
+    console.log(`Scraping member ${result.name}`);
+    const history = await performScrapingMember(result.link);
+    result.history = history;
+  }
+  return results;
 });
 
 const listOfFamilyClans = [
@@ -25,7 +31,7 @@ async function performScrapingClans() {
     name: string;
     link: string;
     currentClan: string;
-    history: { clan: string; time: string }[];
+    history: { clan: string; duration: string }[];
   }[] = [];
 
   for (const clan of listOfFamilyClans) {
@@ -69,25 +75,26 @@ async function performScrapingClans() {
 
 async function performScrapingMember(link: string) {
   try {
-    const axiosResponse = await axios.get(link, {
-      headers: {
-        "User-Agent":
-          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
-      },
-    });
+    const axiosResponse = await axios.get(
+      "https://www.clashofstats.com" + link,
+      {
+        headers: {
+          "User-Agent":
+            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+        },
+      }
+    );
 
     const $ = cheerio.load(axiosResponse.data);
 
     // Selecting and extracting names, tags, and durations
-    const results: { name: string; tag: string; duration: string }[] = [];
+    const results: { clan: string; duration: string }[] = [];
     $(".v-list--three-line .v-list-item").each((_index, element) => {
-      const name = $(element).find(".v-list-item__title").text().trim();
-      const tag = $(element).find(".text--secondary.caption").text().trim();
+      const clan = $(element).find(".v-list-item__title").text().trim();
       const duration = $(element).find(".v-list-item__subtitle").text().trim();
 
       results.push({
-        name,
-        tag,
+        clan,
         duration,
       });
     });
