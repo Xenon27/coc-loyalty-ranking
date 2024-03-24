@@ -1,8 +1,8 @@
 import cheerio from "cheerio";
 import axios from "axios";
 
-export default defineEventHandler((event) => {
-  return performScraping();
+export default defineEventHandler(() => {
+  return performScrapingClans();
 });
 
 const listOfFamilyClans = [
@@ -20,23 +20,67 @@ const listOfFamilyClans = [
   { clanName: "BluuTopia", clanId: "2Q2PLLG0V" },
 ];
 
-async function performScraping() {
-  try {
-    const axiosResponse = await axios.get(
-      "https://www.clashofstats.com/players/YLL080LG/history/",
-      {
+async function performScrapingClans() {
+  const results: {
+    name: string;
+    link: string;
+    currentClan: string;
+    history: { clan: string; time: string }[];
+  }[] = [];
+
+  for (const clan of listOfFamilyClans) {
+    console.log(`Scraping clan ${clan.clanName}`);
+
+    const link = `https://www.clashofstats.com/clans/${clan.clanId}/members/table`;
+
+    try {
+      const axiosResponse = await axios.get(link, {
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
         },
-      }
-    );
+      });
+
+      const $ = cheerio.load(axiosResponse.data);
+
+      $(".no-link").each((_index, element) => {
+        const name = $(element)
+          .find(".r-val__text > div:first-child")
+          .text()
+          .trim();
+        const link =
+          $(element).attr("href")?.replace("summary", "history") ?? "";
+
+        results.push({
+          name,
+          link,
+          currentClan: clan.clanName,
+          history: [],
+        });
+      });
+    } catch (error) {
+      console.error("Error occurred while scraping:", error);
+      return [];
+    }
+  }
+
+  return results;
+}
+
+async function performScrapingMember(link: string) {
+  try {
+    const axiosResponse = await axios.get(link, {
+      headers: {
+        "User-Agent":
+          "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/108.0.0.0 Safari/537.36",
+      },
+    });
 
     const $ = cheerio.load(axiosResponse.data);
 
     // Selecting and extracting names, tags, and durations
-    const results = [];
-    $(".v-list--three-line .v-list-item").each((index, element) => {
+    const results: { name: string; tag: string; duration: string }[] = [];
+    $(".v-list--three-line .v-list-item").each((_index, element) => {
       const name = $(element).find(".v-list-item__title").text().trim();
       const tag = $(element).find(".text--secondary.caption").text().trim();
       const duration = $(element).find(".v-list-item__subtitle").text().trim();
