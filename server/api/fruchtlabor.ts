@@ -34,7 +34,7 @@ async function getFamilyMembersDurations() {
       console.log(clan.clanName);
       const members = await getClanMembers(clan.clanTag);
       familyMembers.push(
-        await Promise.all(
+        ...(await Promise.all(
           members.map(async (member: { name: string; tag: string }) => {
             // todo: error handling for type
             return {
@@ -45,7 +45,7 @@ async function getFamilyMembersDurations() {
               history: await getPlayerHistory(member.tag), // todo: returns any atm
             };
           })
-        )
+        ))
       );
     })
   );
