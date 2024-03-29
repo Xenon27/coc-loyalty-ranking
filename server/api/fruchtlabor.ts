@@ -21,9 +21,7 @@ const listOfFamilyClans = [
   { clanName: "Beta-Beeren", clanTag: "2LQJP2L0P" },
   { clanName: "Beerenhöhle", clanTag: "2QJL89PJ9" },
   { clanName: "FruchtFliegen", clanTag: "2YL99P9LC" },
-  { clanName: "LazyFruits", clanTag: "2LGGJUCLV" },
   { clanName: "Beerenbrüder", clanTag: "2YGLUYJPR" },
-  { clanName: "BluuTopia", clanTag: "2Q2PLLG0V" },
 ];
 
 async function getFamilyMembersDurations() {
