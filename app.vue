@@ -1,4 +1,3 @@
-
 <template>
   <v-container>
     <v-row>
@@ -13,18 +12,14 @@
           multiple
           attach
           chips
-          item-value="name"
-          item-text="name"
           @change="filterUsers"
         >
           <template v-slot:item="{ item }">
             <v-list-item>
               <v-list-item-action>
-                <v-checkbox :value="isSelected(item.name)" :input-value="isSelected(item.name)" @click.stop.prevent="toggleClan(item.name)"></v-checkbox>
+                <v-checkbox :value="isSelected(item)" @click.stop.prevent="toggleClan(item)"></v-checkbox>
               </v-list-item-action>
-              <v-list-item-content>
-                <v-list-item-title>{{ item.name }}</v-list-item-title>
-              </v-list-item-content>
+              <v-list-item-title>{{ item }}</v-list-item-title>
             </v-list-item>
           </template>
         </v-select>
@@ -35,10 +30,10 @@
         <v-list>
           <v-list-item
             v-for="user in filteredUsers"
-            :key="user.id"
+            :key="user.playerName"
           >
             <v-list-item-content>
-              <v-list-item-title>{{ user.name }} ---- {{ user.clan }} - {{ user.time }}</v-list-item-title>
+              <v-list-item-title>{{ user.playerName }} ---- {{ user.currentClan }} - {{ user.totalDuration }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -52,35 +47,32 @@ export default {
   data() {
     return {
       selectedClans: [],
-      users: [
-        { id: 1, name: 'Benutzer A', clan: 'Clan A', time: "2 Jahre" },
-        { id: 2, name: 'Benutzer B', clan: 'Clan B', time: "3 Jahre" },
-        { id: 3, name: 'Benutzer C', clan: 'Clan C', time: "1 Wochen" },
-        { id: 4, name: 'Benutzer D', clan: 'Clan D', time: "8 Tage" },
-        { id: 5, name: 'Mobias Tenzel', clan: 'Clan B', time: "1 Stunden" },
-        { id: 6, name: 'Tobias Menzel', clan: 'FruchtLabor', time: "123456789 Jahre" },
-        // Fügen Sie hier weitere Benutzer hinzu
-      ],
+      users: [],
       filteredUsers: [],
     };
   },
+  async mounted() {
+    try {
+      const { default: userData } = await import('./test.json');
+      this.users = userData;
+      this.filteredUsers = userData;
+    } catch (error) {
+      console.error('Error loading data:', error);
+    }
+  },
   computed: {
     availableClans() {
-      const clansSet = new Set(this.users.map(user => user.clan));
-      return Array.from(clansSet).map(clanName => ({ name: clanName }));
-    },
-    filteredUsers() {
-      if (!this.selectedClans.length) {
-        return this.users;
-      }
-      return this.users.filter(user => this.selectedClans.includes(user.clan));
+      const clansSet = new Set(this.users.map(user => user.currentClan));
+      return Array.from(clansSet);
     },
   },
   methods: {
     filterUsers() {
-      // Da filteredUsers bereits eine berechnete Eigenschaft ist, muss sie nicht aktualisiert werden.
-      // Die berechnete Eigenschaft wird automatisch neu berechnet, wenn ihre Abhängigkeiten sich ändern,
-      // in diesem Fall `selectedClans`.
+      if (!this.selectedClans.length) {
+        this.filteredUsers = this.users;
+      } else {
+        this.filteredUsers = this.users.filter(user => this.selectedClans.includes(user.currentClan));
+      }
     },
     toggleClan(clanName) {
       const index = this.selectedClans.indexOf(clanName);
@@ -89,7 +81,7 @@ export default {
       } else {
         this.selectedClans.push(clanName);
       }
-      // Es ist nicht notwendig, filterUsers hier aufzurufen, da filteredUsers eine berechnete Eigenschaft ist.
+      this.filterUsers();
     },
     isSelected(clanName) {
       return this.selectedClans.includes(clanName);
