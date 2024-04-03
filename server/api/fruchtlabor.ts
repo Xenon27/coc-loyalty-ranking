@@ -40,6 +40,7 @@ async function getFamilyMembersDurations() {
               playerTag: member.tag,
               currentClan: clan.clanName,
               currentClanTag: clan.clanTag,
+              totalDuration: 0,
               history: await getPlayerHistory(member.tag), // todo: returns any atm
             };
           })
@@ -47,6 +48,15 @@ async function getFamilyMembersDurations() {
       );
     })
   );
+  await Promise.all(
+    familyMembers.map(async (member: any) => {
+      member.totalDuration = member.history.reduce(
+        (totalDuration: number, clan: any) => totalDuration + clan.duration,
+        0
+      );
+    })
+  );
+
   return familyMembers;
 }
 
@@ -74,6 +84,9 @@ async function getPlayerHistory(playerTag: string) {
         )
       )
       .map((clan: any) => ({
+        clanName: listOfFamilyClans.find(
+          (familyClan) => "#" + familyClan.clanTag === clan.tag
+        )?.clanName,
         clanTag: clan.tag,
         duration: clan.duration,
       }));
