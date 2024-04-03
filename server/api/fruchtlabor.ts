@@ -67,10 +67,16 @@ async function getPlayerHistory(playerTag: string) {
       `https://api.clashofstats.com/players/${playerTag.slice(1)}/history/clans`
     );
 
-    return response.data.summary.map((clan: any) => ({
-      clanTag: clan.tag,
-      duration: clan.duration,
-    }));
+    return response.data.summary
+      .filter((clan: any) =>
+        listOfFamilyClans.some(
+          (familyclan) => "#" + familyclan.clanTag === clan.tag
+        )
+      )
+      .map((clan: any) => ({
+        clanTag: clan.tag,
+        duration: clan.duration,
+      }));
   } catch (error) {
     console.error(error + " for player " + playerTag);
     return [];
