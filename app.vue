@@ -30,7 +30,9 @@
         <v-list>
           <v-list-item
             v-for="user in sortedFilteredUsers"
-            :key="user.playerTag">
+            :key="user.playerTag"
+            @click="openDialog(user)"
+          >
             <v-list-item-content>
               <v-list-item-title>{{ user.playerName }} - {{ user.currentClan }} - {{ formatDuration(user.totalDuration) }}</v-list-item-title>
             </v-list-item-content>
@@ -38,6 +40,25 @@
         </v-list>
       </v-col>
     </v-row>
+
+    <!-- Dialog component -->
+    <v-dialog v-model="dialog" max-width="500px">
+      <v-card>
+        <v-card-title>Player History</v-card-title>
+        <v-card-text>
+          <v-list>
+            <v-list-item v-for="entry in dialogData" :key="entry.clanName">
+              <v-list-item-content>
+                <v-list-item-title>{{ entry.clanName }} - {{ formatDuration(entry.duration) }}</v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" text @click="dialog = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </v-container>
 </template>
 
@@ -50,6 +71,8 @@ export default {
       selectedClans: [],
       users: [],
       filteredUsers: [],
+      dialog: false, // Dialog control
+      dialogData: [] // Data for dialog
     };
   },
   mounted() {
@@ -91,45 +114,45 @@ export default {
       // Check if a clan is selected
       return this.selectedClans.includes(clanName);
     },
-
-  formatDuration(milliseconds) {
-  // Function to format duration from milliseconds to years, months, and days
-  const msInSecond = 1000;
-  const secondsInMinute = 60;
-  const minutesInHour = 60;
-  const hoursInDay = 24;
-  const daysInYear = 365.2425; // Average days in a year including leap years
-
-  let days = milliseconds / (msInSecond * secondsInMinute * minutesInHour * hoursInDay);
-
-  const years = Math.floor(days / daysInYear);
-  let remainingDays = days % daysInYear;
-
-  const averageDaysInMonth = daysInYear / 12;
-  const months = Math.floor(remainingDays / averageDaysInMonth);
-  remainingDays %= averageDaysInMonth;
-  remainingDays = `${Math.round(remainingDays)}`;
-
-  let result = "";
-  if (years > 0) {
-    result += `${years} Year${years === 1 ? '' : 's'} `;
-  }
-  if (months > 0) {
-    result += `${months} Month${months === 1 ? '' : 's'} `;
-  }
-  //Days
-  result += `${remainingDays} Day${remainingDays > 1 ? 's' : ''} `;
-
-  if (remainingDays == 0) {
-    result = "History is private or less than 1 day";
-  }
+    formatDuration(milliseconds) {
+      // Function to format duration from milliseconds to years, months, and days
+      const msInSecond = 1000;
+      const secondsInMinute = 60;
+      const minutesInHour = 60;
+      const hoursInDay = 24;
+      const daysInYear = 365.2425; // Average days in a year including leap years
   
-
-  return result.trim();
-},
-
-},
+      let days = milliseconds / (msInSecond * secondsInMinute * minutesInHour * hoursInDay);
+  
+      const years = Math.floor(days / daysInYear);
+      let remainingDays = days % daysInYear;
+  
+      const averageDaysInMonth = daysInYear / 12;
+      const months = Math.floor(remainingDays / averageDaysInMonth);
+      remainingDays %= averageDaysInMonth;
+      remainingDays = Math.round(remainingDays);
+  
+      let result = "";
+      if (years > 0) {
+        result += `${years} Year${years === 1 ? '' : 's'} `;
+      }
+      if (months > 0) {
+        result += `${months} Month${months === 1 ? '' : 's'} `;
+      }
+      //Days
+      result += `${remainingDays} Day${remainingDays === 1 ? '' : 's'} `;
+  
+      if (remainingDays === 0) {
+        result = "History is private or less than 1 day";
+      }
+  
+      return result.trim();
+    },
+    openDialog(user) {
+      // Open dialog with user's history data
+      this.dialogData = user.history || []; // Set history data, or an empty array if not available
+      this.dialog = true;
+    }
+  },
 };
-
-
 </script>
