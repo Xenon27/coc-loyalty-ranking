@@ -6,8 +6,14 @@ export default defineEventHandler(async (event) => {
   const family = getRouterParam(event, "family");
   if (!family) {
     // not in a list of family names
-    return new Response("Please give the name of the family", { status: 404 });
+    throw createError({
+      statusCode: 400,
+      statusMessage: "Family not found.",
+    });
   }
+
+  useStorage("data").setItem(family, family);
+
   return await getFamilyMembersDurations();
 });
 
