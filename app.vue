@@ -17,7 +17,7 @@
           <template v-slot:item="{ item }">
             <v-list-item>
               <v-list-item-action>
-                <v-checkbox :value="!isSelected(item.title)" @click="toggleClan(item.title)"></v-checkbox>
+                <v-checkbox :value="item.title" @click="toggleClan(item.title)"></v-checkbox>
                 <v-list-item-content>{{ item.title }}</v-list-item-content>
               </v-list-item-action>
             </v-list-item>
@@ -91,7 +91,8 @@ export default {
       // Check if a clan is selected
       return this.selectedClans.includes(clanName);
     },
-    formatDuration(milliseconds) {
+
+  formatDuration(milliseconds) {
   // Function to format duration from milliseconds to years, months, and days
   const msInSecond = 1000;
   const secondsInMinute = 60;
@@ -107,6 +108,7 @@ export default {
   const averageDaysInMonth = daysInYear / 12;
   const months = Math.floor(remainingDays / averageDaysInMonth);
   remainingDays %= averageDaysInMonth;
+  remainingDays = `${Math.round(remainingDays)}`;
 
   let result = "";
   if (years > 0) {
@@ -115,17 +117,19 @@ export default {
   if (months > 0) {
     result += `${months} Month${months === 1 ? '' : 's'} `;
   }
-  if (remainingDays > 0) {
-    if (remainingDays === 1) {
-      result += `${remainingDays.toFixed(2)} Day `;
-    } else {
-      result += `${remainingDays.toFixed(2)} Days `;
-    }
+  //Days
+  result += `${remainingDays} Day${remainingDays > 1 ? 's' : ''} `;
+
+  if (remainingDays == 0) {
+    result = "History is private or less than 1 day";
   }
+  
 
   return result.trim();
 },
+
 },
 };
+
 
 </script>
