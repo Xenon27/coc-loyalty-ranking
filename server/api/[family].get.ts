@@ -1,8 +1,13 @@
 import axios from "axios";
 import dotenv from "dotenv";
 
-// duration in ms
-export default defineEventHandler(async () => {
+// TotalDuration in ms
+export default defineEventHandler(async (event) => {
+  const family = getRouterParam(event, "family");
+  if (!family) {
+    // not in a list of family names
+    return new Response("Please give the name of the family", { status: 404 });
+  }
   return await getFamilyMembersDurations();
 });
 
@@ -11,6 +16,7 @@ dotenv.config();
 const COC_API_TOKEN = process.env.COC_API_TOKEN;
 axios.defaults.headers.common["Authorization"] = `Bearer ${COC_API_TOKEN}`;
 
+// This should be somehow set differently and depending on the param
 const listOfFamilyClans = [
   { clanName: "FruchtLabor", clanTag: "28LYJ29CQ" },
   { clanName: "FruchtLabor CWL", clanTag: "2Y9PPQQC9" },
@@ -29,7 +35,6 @@ async function getFamilyMembersDurations() {
 
   await Promise.all(
     listOfFamilyClans.map(async (clan) => {
-      console.log(clan.clanName);
       const members = await getClanMembers(clan.clanTag);
       familyMembers.push(
         ...(await Promise.all(
@@ -91,7 +96,7 @@ async function getPlayerHistory(playerTag: string) {
         duration: clan.duration,
       }));
   } catch (error) {
-    console.error(error + " for player " + playerTag);
+    console.error(error + " for player " + playerTag + ". History is private.");
     return [];
   }
 }
