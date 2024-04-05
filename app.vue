@@ -2,7 +2,7 @@
   <v-container>
     <v-row>
       <v-col>
-        <h2>Ranking</h2>
+        <h1>Ranking</h1>
       </v-col>
       <v-col>
         <v-select
@@ -17,9 +17,9 @@
           <template v-slot:item="{ item }">
             <v-list-item>
               <v-list-item-action>
-                <v-checkbox :value="isSelected(item.title)" @click.stop.prevent="toggleClan(item.title)"></v-checkbox>
+                <v-checkbox :value="!isSelected(item.title)" @click="toggleClan(item.title)"></v-checkbox>
+                <v-list-item-content>{{ item.title }}</v-list-item-content>
               </v-list-item-action>
-              <v-list-item-content>{{ item.title }}</v-list-item-content>
             </v-list-item>
           </template>
         </v-select>
@@ -29,11 +29,10 @@
       <v-col>
         <v-list>
           <v-list-item
-            v-for="user in filteredUsers"
-            :key="user.playerName"
-          >
+            v-for="user in sortedFilteredUsers"
+            :key="user.playerTag">
             <v-list-item-content>
-              <v-list-item-title>{{ user.playerName }} - {{ user.currentClan }} - {{ user.totalDuration }}</v-list-item-title>
+              <v-list-item-title>{{ user.playerName }} - {{ user.currentClan }} - {{ formatDuration(user.totalDuration) }}</v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list>
@@ -64,6 +63,10 @@ export default {
       const clansSet = new Set(this.users.map(user => user.currentClan));
       return Array.from(clansSet);
     },
+    sortedFilteredUsers() {
+      // Sort filtered users by totalDuration in descending order
+      return this.filteredUsers.slice().sort((a, b) => b.totalDuration - a.totalDuration);
+    },
   },
   methods: {
     filterUsers() {
@@ -88,6 +91,41 @@ export default {
       // Check if a clan is selected
       return this.selectedClans.includes(clanName);
     },
-  },
+    formatDuration(milliseconds) {
+  // Function to format duration from milliseconds to years, months, and days
+  const msInSecond = 1000;
+  const secondsInMinute = 60;
+  const minutesInHour = 60;
+  const hoursInDay = 24;
+  const daysInYear = 365.2425; // Average days in a year including leap years
+
+  let days = milliseconds / (msInSecond * secondsInMinute * minutesInHour * hoursInDay);
+
+  const years = Math.floor(days / daysInYear);
+  let remainingDays = days % daysInYear;
+
+  const averageDaysInMonth = daysInYear / 12;
+  const months = Math.floor(remainingDays / averageDaysInMonth);
+  remainingDays %= averageDaysInMonth;
+
+  let result = "";
+  if (years > 0) {
+    result += `${years} Year${years === 1 ? '' : 's'} `;
+  }
+  if (months > 0) {
+    result += `${months} Month${months === 1 ? '' : 's'} `;
+  }
+  if (remainingDays > 0) {
+    if (remainingDays === 1) {
+      result += `${remainingDays.toFixed(2)} Day `;
+    } else {
+      result += `${remainingDays.toFixed(2)} Days `;
+    }
+  }
+
+  return result.trim();
+},
+},
 };
+
 </script>
