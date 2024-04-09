@@ -1,5 +1,6 @@
 import axios from "axios";
 import dotenv from "dotenv";
+import { Clan } from "~/types/models/clan";
 
 // TotalDuration in ms
 export default defineEventHandler(async (event) => {
@@ -12,31 +13,19 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  useStorage("data").setItem(family, family);
+  listOfFamilyClans = await useStorage("data").getItem("FruchtLabor");
 
-  return await getFamilyMembersDurations();
+  return await getFamilyMembersDurations(listOfFamilyClans);
 });
 
 dotenv.config();
+axios.defaults.headers.common[
+  "Authorization"
+] = `Bearer ${process.env.COC_API_TOKEN}`;
 
-const COC_API_TOKEN = process.env.COC_API_TOKEN;
-axios.defaults.headers.common["Authorization"] = `Bearer ${COC_API_TOKEN}`;
+let listOfFamilyClans: Clan[];
 
-// This should be somehow set differently and depending on the param
-const listOfFamilyClans = [
-  { clanName: "FruchtLabor", clanTag: "28LYJ29CQ" },
-  { clanName: "FruchtLabor CWL", clanTag: "2Y9PPQQC9" },
-  { clanName: "FruchtLabörchen", clanTag: "2RYP8PQRG" },
-  { clanName: "Obstsalat", clanTag: "2Q8CL9Y20" },
-  { clanName: "Der Obstorden", clanTag: "2Q8QPCUCU" },
-  { clanName: "Infructus", clanTag: "2QQJQ2CJP" },
-  { clanName: "Beta-Beeren", clanTag: "2LQJP2L0P" },
-  { clanName: "Beerenhöhle", clanTag: "2QJL89PJ9" },
-  { clanName: "FruchtFliegen", clanTag: "2YL99P9LC" },
-  { clanName: "Beerenbrüder", clanTag: "2YGLUYJPR" },
-];
-
-async function getFamilyMembersDurations() {
+async function getFamilyMembersDurations(listOfFamilyClans: any) {
   let familyMembers: any = [];
 
   await Promise.all(
