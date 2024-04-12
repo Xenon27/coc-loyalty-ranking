@@ -20,6 +20,12 @@ export default defineEventHandler(async (event) => {
     });
   }
 
+  let returnResuls = await useStorage("data").getItem(family + "Members");
+  if (returnResuls) {
+    console.log("Returning cached data.");
+    return returnResuls;
+  }
+
   const dataResponse = await useStorage("data").getItem(family);
   if (!dataResponse) {
     throw createError({
@@ -37,7 +43,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  return await getFamilyMembersDurations(parseData.data);
+  returnResuls = await getFamilyMembersDurations(parseData.data);
+  useStorage("data").setItem(family + "Members", returnResuls);
+  return returnResuls;
 });
 
 async function getFamilyMembersDurations(listOfFamilyClans: Clan[]) {
