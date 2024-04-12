@@ -1,83 +1,70 @@
 <template>
-    <!-- Main Content -->
-    <v-container>
-      <v-row>
-        <v-col>
-          <h1>Ranking</h1>
-        </v-col>
-        <v-col>
-          <v-select
-            v-model="selectedClans"
-            :items="availableClans"
-            label="Clans"
-            multiple
-            attach
-            chips
-            @change="filterUsers"
+  <!-- Main Content -->
+  <v-container>
+    <v-row justify="center">
+      <v-col cols="12">
+        <v-select
+          v-model="selectedClans"
+          label="Clans"
+          :items="availableClans"
+          multiple
+          chips
+          outlined
+          clearable
+          dense
+        ></v-select>
+      </v-col>
+    </v-row>
+    <v-row justify="center">
+      <v-col cols="12">
+        <v-list>
+          <!-- List Items -->
+          <v-list-item
+            v-for="user in sortedFilteredUsers"
+            :key="user.playerTag"
+            @click="openDialog(user)"
           >
-          <template v-slot:item="{ item }">
-            <v-list-item>
-              <v-list-item-action>
-                <v-checkbox :value="item.title" @click="toggleClan(item.title)"></v-checkbox>
-                <v-list-item-content>{{ item.title }}</v-list-item-content>
-              </v-list-item-action>
-            </v-list-item>
-          </template>
-          </v-select>
-        </v-col>
-      </v-row>
-      <v-row justify="center">
-        <v-col cols="8">
-          <v-list>
-            <!-- List Items -->
-            <v-list-item
-              v-for="user in sortedFilteredUsers"
-              :key="user.playerTag"
-              @click="openDialog(user)"
-            >
-              <v-list-item-content>
-                <v-list-item-title>
-                  <v-btn variant="text" @click="user.expanded = !user.expanded">
-                    <!-- User Name -->
-                    <v-chip :color = "'#949494a9'" label class="text-chip">
-                      <span style="color: black"> {{ user.playerName }} </span>
-                    </v-chip> 
-                    <!-- Current Clan -->
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <v-chip :color = "'#949494a9'" label class="text-chip">
-                      <span style="color: black">{{ user.currentClan }} </span> 
-                    </v-chip> 
-                    <!-- Total Duration -->
-                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <v-chip :color="'#FFE815'" label class="text-chip"> 
-                      <span style="color: black"> {{ formatDuration(user.totalDuration) }}</span>
-                    </v-chip>
-                  </v-btn>
-                </v-list-item-title>
-              </v-list-item-content>
-              <!-- Expanded Content -->
-              <v-expand-transition>
-                <v-slide-y-transition>
-                  <v-expand-panel v-if="user.expanded">
-                    <v-card>
-                      <v-card-text>
-                        <v-list>
-                          <v-list-item v-for="(entry, index) in user.history" :key="index">
-                            <v-list-item-content>
-                              <v-list-item-title>{{ entry.clanName }} - {{ formatDuration(entry.duration) }}</v-list-item-title>
-                            </v-list-item-content>
-                          </v-list-item>
-                        </v-list>
-                      </v-card-text>
-                    </v-card>
-                  </v-expand-panel>
-                </v-slide-y-transition>
-              </v-expand-transition>
-            </v-list-item>
-          </v-list>
-        </v-col>
-      </v-row>
-    </v-container>
+            <v-list-item-content>
+              <v-list-item-title style="display: flex; justify-content: center;">
+                <v-btn variant="text" @click="user.expanded = !user.expanded">
+                  <!-- User Name -->
+                  <v-chip :color="'#949494a9'" label class="text-chip" style="flex-grow: 1;">
+                    <span style="color: black">{{ user.playerName }}</span>
+                  </v-chip> 
+                  <!-- Current Clan -->
+                  <v-chip :color="'#949494a9'" label class="text-chip" style="flex-grow: 1;">
+                    <span style="color: black">{{ user.currentClan }}</span> 
+                  </v-chip> 
+                  <!-- Total Duration -->
+                  <v-chip :color="'#FFE815'" label class="text-chip" style="flex-grow: 1;"> 
+                    <span style="color: black">{{ formatDuration(user.totalDuration) }}</span>
+                  </v-chip>
+                </v-btn>
+              </v-list-item-title>
+            </v-list-item-content>
+            <!-- Expanded Content -->
+            <v-expand-transition>
+              <v-slide-y-transition>
+                <v-expand-panel v-if="user.expanded">
+                  <v-card>
+                    <v-card-text>
+                      <v-list>
+                        <v-list-item v-for="(entry, index) in user.history" :key="index">
+                          <v-list-item-content>
+                            <v-list-item-title>{{ entry.clanName }} - {{ formatDuration(entry.duration) }}</v-list-item-title>
+                          </v-list-item-content>
+                        </v-list-item>
+                      </v-list>
+                    </v-card-text>
+                  </v-card>
+                </v-expand-panel>
+              </v-slide-y-transition>
+            </v-expand-transition>
+          </v-list-item>
+        </v-list>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script>
@@ -109,6 +96,14 @@ export default {
       return this.filteredUsers.slice().sort((a, b) => b.totalDuration - a.totalDuration);
     },
   },
+  watch: {
+    selectedClans: {
+      handler() {
+        this.filterUsers();
+      },
+      deep: true,
+    },
+  },
   methods: {
     filterUsers() {
       // Filter users based on selected clans
@@ -117,20 +112,6 @@ export default {
       } else {
         this.filteredUsers = this.users.filter(user => this.selectedClans.includes(user.currentClan));
       }
-    },
-    toggleClan(clanName) {
-      // Toggle selected clans
-      const index = this.selectedClans.indexOf(clanName);
-      if (index > -1) {
-        this.selectedClans.splice(index, 1);
-      } else {
-        this.selectedClans.push(clanName);
-      }
-      this.filterUsers();
-    },
-    isSelected(clanName) {
-      // Check if a clan is selected
-      return this.selectedClans.includes(clanName);
     },
     formatDuration(milliseconds) {
       // Function to format duration from milliseconds to years, months, and days
@@ -174,3 +155,8 @@ export default {
   },
 };
 </script>
+
+<style scoped>
+/* Add your custom styles here */
+</style>
+
