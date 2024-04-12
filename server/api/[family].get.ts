@@ -20,21 +20,10 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const MembersLastUpdated = await useStorage("data").getItem(
-    family + "MembersLastUpdated"
-  );
-  if (MembersLastUpdated) {
-    const lastUpdated = new Date(MembersLastUpdated as string);
-    const now = new Date();
-    const diff = Math.abs(now.getTime() - lastUpdated.getTime());
-    const diffHours = Math.ceil(diff / (1000 * 60 * 60));
-    if (diffHours < 24) {
-      console.log("Returning cached data.");
-      const returnResuls = await useStorage("data").getItem(family + "Members");
-      if (returnResuls) {
-        return returnResuls;
-      }
-    }
+  const returnResults = checkCachedData(family);
+  if (returnResults) {
+    console.log("Returning cached data.");
+    return returnResults;
   }
 
   const dataResponse = await useStorage("data").getItem(family);
@@ -152,5 +141,20 @@ async function getPlayerHistory(playerTag: string, listOfFamilyClans: Clan[]) {
       console.error(error);
     }
     return [];
+  }
+}
+
+async function checkCachedData(family: string) {
+  const MembersLastUpdated = await useStorage("data").getItem(
+    family + "MembersLastUpdated"
+  );
+  if (MembersLastUpdated) {
+    const lastUpdated = new Date(MembersLastUpdated as string);
+    const now = new Date();
+    const diff = Math.abs(now.getTime() - lastUpdated.getTime());
+    const diffHours = Math.ceil(diff / (1000 * 60 * 60));
+    if (diffHours < 24) {
+      return await useStorage("data").getItem(family + "Members");
+    }
   }
 }
