@@ -20,10 +20,21 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  let returnResuls = await useStorage("data").getItem(family + "Members");
-  if (returnResuls) {
-    console.log("Returning cached data.");
-    return returnResuls;
+  const MembersLastUpdated = await useStorage("data").getItem(
+    family + "MembersLastUpdated"
+  );
+  if (MembersLastUpdated) {
+    const lastUpdated = new Date(MembersLastUpdated as string);
+    const now = new Date();
+    const diff = Math.abs(now.getTime() - lastUpdated.getTime());
+    const diffHours = Math.ceil(diff / (1000 * 60 * 60));
+    if (diffHours < 24) {
+      console.log("Returning cached data.");
+      const returnResuls = await useStorage("data").getItem(family + "Members");
+      if (returnResuls) {
+        return returnResuls;
+      }
+    }
   }
 
   const dataResponse = await useStorage("data").getItem(family);
@@ -43,8 +54,9 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  returnResuls = await getFamilyMembersDurations(parseData.data);
+  const returnResuls = await getFamilyMembersDurations(parseData.data);
   useStorage("data").setItem(family + "Members", returnResuls);
+  useStorage("data").setItem(family + "MembersLastUpdated", new Date());
   return returnResuls;
 });
 
