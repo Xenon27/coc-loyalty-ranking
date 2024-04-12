@@ -12,6 +12,19 @@ axios.defaults.headers.common[
 
 // TODO: outsource map function to a separate function
 
+const listOfFamilyClans = [
+  { clanName: "FruchtLabor", clanTag: "28LYJ29CQ" },
+  { clanName: "FruchtLabor CWL", clanTag: "2Y9PPQQC9" },
+  { clanName: "FruchtLabörchen", clanTag: "2RYP8PQRG" },
+  { clanName: "Obstsalat", clanTag: "2Q8CL9Y20" },
+  { clanName: "Der Obstorden", clanTag: "2Q8QPCUCU" },
+  { clanName: "Infructus", clanTag: "2QQJQ2CJP" },
+  { clanName: "Beta-Beeren", clanTag: "2LQJP2L0P" },
+  { clanName: "Beerenhöhle", clanTag: "2QJL89PJ9" },
+  { clanName: "FruchtFliegen", clanTag: "2YL99P9LC" },
+  { clanName: "Beerenbrüder", clanTag: "2YGLUYJPR" },
+];
+
 export default defineEventHandler(async (event) => {
   const family = getRouterParam(event, "family");
   if (!family) {
@@ -21,15 +34,16 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const dataResponse = fs.readFileSync(".data/kv/FruchtLabor.json", "utf8");
+  await useStorage("data").setItem(family, JSON.stringify(listOfFamilyClans));
+
+  const dataResponse = await useStorage("data").getItem(family);
   if (!dataResponse) {
     throw createError({
       statusCode: 500,
       statusMessage: "DataResponse not found.",
     });
   }
-  console.log(JSON.parse(dataResponse));
-  const parseData = ClanArray.safeParse(JSON.parse(dataResponse));
+  const parseData = ClanArray.safeParse(dataResponse);
 
   if (!parseData.success) {
     console.log(parseData.error);
