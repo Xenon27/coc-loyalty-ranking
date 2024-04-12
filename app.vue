@@ -1,19 +1,20 @@
 <template>
-  <v-container>
-    <v-row>
-      <v-col>
-        <h1>Ranking</h1>
-      </v-col>
-      <v-col>
-        <v-select
-          v-model="selectedClans"
-          :items="availableClans"
-          label="Clans"
-          multiple
-          attach
-          chips
-          @change="filterUsers"
-        >
+    <!-- Main Content -->
+    <v-container>
+      <v-row>
+        <v-col>
+          <h1>Ranking</h1>
+        </v-col>
+        <v-col>
+          <v-select
+            v-model="selectedClans"
+            :items="availableClans"
+            label="Clans"
+            multiple
+            attach
+            chips
+            @change="filterUsers"
+          >
           <template v-slot:item="{ item }">
             <v-list-item>
               <v-list-item-action>
@@ -22,44 +23,61 @@
               </v-list-item-action>
             </v-list-item>
           </template>
-        </v-select>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col>
-        <v-list>
-          <v-list-item
-            v-for="user in sortedFilteredUsers"
-            :key="user.playerTag"
-            @click="openDialog(user)"
-          >
-            <v-list-item-content>
-              <v-list-item-title>{{ user.playerName }} - {{ user.currentClan }} - {{ formatDuration(user.totalDuration) }}</v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
-      </v-col>
-    </v-row>
-
-    <!-- Dialog component -->
-    <v-dialog v-model="dialog" max-width="500px">
-      <v-card>
-        <v-card-title>Player History</v-card-title>
-        <v-card-text>
+          </v-select>
+        </v-col>
+      </v-row>
+      <v-row justify="center">
+        <v-col cols="8">
           <v-list>
-            <v-list-item v-for="entry in dialogData" :key="entry.clanName">
+            <!-- List Items -->
+            <v-list-item
+              v-for="user in sortedFilteredUsers"
+              :key="user.playerTag"
+              @click="openDialog(user)"
+            >
               <v-list-item-content>
-                <v-list-item-title>{{ entry.clanName }} - {{ formatDuration(entry.duration) }}</v-list-item-title>
+                <v-list-item-title>
+                  <v-btn variant="text" @click="user.expanded = !user.expanded">
+                    <!-- User Name -->
+                    <v-chip :color = "'#949494a9'" label class="text-chip">
+                      <span style="color: black"> {{ user.playerName }} </span>
+                    </v-chip> 
+                    <!-- Current Clan -->
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <v-chip :color = "'#949494a9'" label class="text-chip">
+                      <span style="color: black">{{ user.currentClan }} </span> 
+                    </v-chip> 
+                    <!-- Total Duration -->
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                    <v-chip :color="'#FFE815'" label class="text-chip"> 
+                      <span style="color: black"> {{ formatDuration(user.totalDuration) }}</span>
+                    </v-chip>
+                  </v-btn>
+                </v-list-item-title>
               </v-list-item-content>
+              <!-- Expanded Content -->
+              <v-expand-transition>
+                <v-slide-y-transition>
+                  <v-expand-panel v-if="user.expanded">
+                    <v-card>
+                      <v-card-text>
+                        <v-list>
+                          <v-list-item v-for="(entry, index) in user.history" :key="index">
+                            <v-list-item-content>
+                              <v-list-item-title>{{ entry.clanName }} - {{ formatDuration(entry.duration) }}</v-list-item-title>
+                            </v-list-item-content>
+                          </v-list-item>
+                        </v-list>
+                      </v-card-text>
+                    </v-card>
+                  </v-expand-panel>
+                </v-slide-y-transition>
+              </v-expand-transition>
             </v-list-item>
           </v-list>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" text @click="dialog = false">Close</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-  </v-container>
+        </v-col>
+      </v-row>
+    </v-container>
 </template>
 
 <script>
