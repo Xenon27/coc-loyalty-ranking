@@ -22,7 +22,7 @@ export default defineEventHandler(async (event) => {
     });
   }
 
-  const returnResults = checkCachedData(family);
+  const returnResults = await checkCachedData(family);
   if (returnResults) {
     console.log("Returning cached data.");
     return returnResults;
@@ -93,7 +93,7 @@ async function checkCachedData(family: string) {
     const now = new Date();
     const diff = Math.abs(now.getTime() - lastUpdated.getTime());
     const diffHours = Math.ceil(diff / (1000 * 60 * 60));
-    if (diffHours < 24) {
+    if (diffHours < 23) {
       return await useStorage("data").getItem(family + "Members");
     }
   }
