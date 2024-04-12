@@ -9,8 +9,6 @@ axios.defaults.headers.common[
   "Authorization"
 ] = `Bearer ${process.env.COC_API_TOKEN}`;
 
-// TODO: outsource map function to a separate function
-
 export default defineEventHandler(async (event) => {
   const family = getRouterParam(event, "family");
   if (!family) {
@@ -101,7 +99,7 @@ async function getPlayerHistory(playerTag: string, listOfFamilyClans: Clan[]) {
       clanName: string;
       clanTag: string;
       duration: number;
-    }[]; // can't be undefined
+    }[];
   } catch (error: any | AxiosError) {
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 403) {
