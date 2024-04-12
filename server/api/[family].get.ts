@@ -50,38 +50,16 @@ export default defineEventHandler(async (event) => {
 });
 
 async function getFamilyMembersDurations(listOfFamilyClans: Clan[]) {
-  const familyMembers: any = [];
+  const familyMembers = await mapClanMembers(listOfFamilyClans);
 
-  await Promise.all(
-    listOfFamilyClans.map(async (clan) => {
-      const members = await getClanMembers(clan.clanTag);
-
-      members.forEach((member) => {
-        familyMembers.push({
-          playerName: member.name,
-          playerTag: member.tag,
-          currentClan: clan.clanName,
-          currentClanTag: clan.clanTag,
-          totalDuration: 0,
-          history: [],
-        });
-      });
-    })
-  );
   for (const member of familyMembers) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     member.history = member.history.concat(
       await getPlayerHistory(member.playerTag, listOfFamilyClans)
     );
   }
-  await Promise.all(
-    familyMembers.map(async (member: any) => {
-      member.totalDuration = member.history.reduce(
-        (totalDuration: number, clan: any) => totalDuration + clan.duration,
-        0
-      );
-    })
-  );
+
+  await calculateTotalDuration(familyMembers);
 
   return familyMembers;
 }
@@ -118,14 +96,12 @@ async function getPlayerHistory(playerTag: string, listOfFamilyClans: Clan[]) {
     }
 
     return parsedMemberClanHistory.data
-      .map((clan) => ({
-        clanName: listOfFamilyClans.find(
-          (familyClan) => "#" + familyClan.clanTag === clan.tag
-        )?.clanName,
-        clanTag: clan.tag,
-        duration: clan.duration,
-      }))
-      .filter((clan) => clan.clanName); // can't be undefined
+      .map((clan) => mapClan(clan, listOfFamilyClans))
+      .filter((clan) => clan !== null) as {
+      clanName: string;
+      clanTag: string;
+      duration: number;
+    }[]; // can't be undefined
   } catch (error: any | AxiosError) {
     if (axios.isAxiosError(error) && error.response) {
       if (error.response.status === 403) {
@@ -144,6 +120,22 @@ async function getPlayerHistory(playerTag: string, listOfFamilyClans: Clan[]) {
   }
 }
 
+function mapClan(clan: any, listOfFamilyClans: Clan[]) {
+  const clanName = listOfFamilyClans.find(
+    (familyClan) => "#" + familyClan.clanTag === clan.tag
+  )?.clanName;
+
+  if (!clanName) {
+    return null;
+  }
+
+  return {
+    clanName,
+    clanTag: clan.tag,
+    duration: clan.duration,
+  };
+}
+
 async function checkCachedData(family: string) {
   const MembersLastUpdated = await useStorage("data").getItem(
     family + "MembersLastUpdated"
@@ -157,4 +149,45 @@ async function checkCachedData(family: string) {
       return await useStorage("data").getItem(family + "Members");
     }
   }
+}
+
+async function mapClanMembers(clans: Clan[]) {
+  const familyMembers: {
+    playerName: string;
+    playerTag: string;
+    currentClan: string;
+    currentClanTag: string;
+    totalDuration: number;
+    history: { clanName: string; clanTag: string; duration: number }[];
+  }[] = [];
+
+  await Promise.all(
+    clans.map(async (clan) => {
+      const members = await getClanMembers(clan.clanTag);
+
+      members.forEach((member) => {
+        familyMembers.push({
+          playerName: member.name,
+          playerTag: member.tag,
+          currentClan: clan.clanName,
+          currentClanTag: clan.clanTag,
+          totalDuration: 0,
+          history: [],
+        });
+      });
+    })
+  );
+
+  return familyMembers;
+}
+
+async function calculateTotalDuration(familyMembers: any[]) {
+  await Promise.all(
+    familyMembers.map(async (member: any) => {
+      member.totalDuration = member.history.reduce(
+        (totalDuration: number, clan: any) => totalDuration + clan.duration,
+        0
+      );
+    })
+  );
 }
