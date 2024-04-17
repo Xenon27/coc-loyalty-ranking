@@ -15,7 +15,7 @@
         ></v-select>
       </v-col>
     </v-row>
-    <v-row justify="center">
+    <v-row justify="table">
       <v-col cols="12">
         <v-list>
           <!-- List Items -->
@@ -25,36 +25,19 @@
             @click="openDialog(user)"
           >
             <v-list-item-content>
-              <v-list-item-title style="display: flex; justify-content: center">
-                <v-btn variant="text" @click="user.expanded = !user.expanded">
+              <v-list-item-title style="display: table; justify-content: space-between">
+                <v-btn variant="text" @click="user.expanded = !user.expanded" width="100%">
                   <!-- User Name -->
-                  <v-chip
-                    :color="'#949494a9'"
-                    label
-                    class="text-chip"
-                    style="flex-grow: 1"
-                  >
+                  <v-chip :color="'#949494a9'" label class="text-chip">
                     <span style="color: black">{{ user.playerName }}</span>
                   </v-chip>
                   <!-- Current Clan -->
-                  <v-chip
-                    :color="'#949494a9'"
-                    label
-                    class="text-chip"
-                    style="flex-grow: 1"
-                  >
+                  <v-chip :color="'#949494a9'" label class="text-chip">
                     <span style="color: black">{{ user.currentClan }}</span>
                   </v-chip>
                   <!-- Total Duration -->
-                  <v-chip
-                    :color="'#FFE815'"
-                    label
-                    class="text-chip"
-                    style="flex-grow: 1"
-                  >
-                    <span style="color: black">{{
-                      formatDuration(user.totalDuration)
-                    }}</span>
+                  <v-chip :color="'#FFE815'" label class="text-chip">
+                    <span style="color: black">{{ formatDuration(user.totalDuration) }}</span>
                   </v-chip>
                 </v-btn>
               </v-list-item-title>
@@ -66,17 +49,9 @@
                   <v-card>
                     <v-card-text>
                       <v-list>
-                        <v-list-item
-                          v-for="(entry, index) in user.history"
-                          :key="index"
-                        >
+                        <v-list-item v-for="(entry, index) in user.history" :key="index">
                           <v-list-item-content>
-                            <v-list-item-title
-                              >{{ entry.clanName }} -
-                              {{
-                                formatDuration(entry.duration)
-                              }}</v-list-item-title
-                            >
+                            <v-list-item-title>{{ entry.clanName }} - {{ formatDuration(entry.duration) }}</v-list-item-title>
                           </v-list-item-content>
                         </v-list-item>
                       </v-list>
