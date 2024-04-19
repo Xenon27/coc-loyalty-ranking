@@ -1,11 +1,26 @@
 <template>
   <!-- Main Content -->
+  <v-card class="mx-auto" color="grey-lighten-3" max-width="488">
+    <v-layout>
+      <v-app-bar
+        image="C:\Users\SXWOLFMF\Desktop\bilder_COC\AppBar2.png"
+        fixed
+        scroll-behavior="hide"
+        density="prominent"
+        scroll-threshold="20"
+        class="app-bar-container"
+      >
+        <!-- <v-app-bar-title>COC Loyalty Ranking</v-app-bar-title> -->
+      </v-app-bar>
+    </v-layout>
+  </v-card>
+  <br /><br /><br /><br /><br /><br />
   <v-container>
-    <v-row justify="center">
+    <v-row justify="space-around">
       <v-col cols="12">
         <v-select
           v-model="selectedClans"
-          label="Clans"
+          label="Filter for Clans"
           :items="availableClans"
           multiple
           chips
@@ -15,33 +30,48 @@
         ></v-select>
       </v-col>
     </v-row>
-    <v-row justify="table">
+    <v-row justify="space-evenly">
       <v-col cols="12">
         <v-list>
           <!-- List Items -->
           <v-list-item
-            v-for="user in sortedFilteredUsers"
+            v-for="(user, index) in sortedFilteredUsers"
             :key="user.playerTag"
             @click="openDialog(user)"
           >
+          <div class="text-left">
             <v-list-item-content>
-              <v-list-item-title style="display: table; justify-content: space-between">
-                <v-btn variant="text" @click="user.expanded = !user.expanded" width="100%">
+              <v-list-item-title>
+                <v-btn variant="text" @click="user.expanded = !user.expanded" block class="justify-space-between">
+                  <v-sheet  class="pa-2">
+                    <v-chip :color="'#949494a9'"  label>
+                      <span style="color: black">{{ index + 1 }} = </span>
+                    </v-chip>
+                  </v-sheet>
                   <!-- User Name -->
-                  <v-chip :color="'#949494a9'" label class="text-chip">
-                    <span style="color: black">{{ user.playerName }}</span>
-                  </v-chip>
-                  <!-- Current Clan -->
-                  <v-chip :color="'#949494a9'" label class="text-chip">
-                    <span style="color: black">{{ user.currentClan }}</span>
-                  </v-chip>
-                  <!-- Total Duration -->
-                  <v-chip :color="'#FFE815'" label class="text-chip">
-                    <span style="color: black">{{ formatDuration(user.totalDuration) }}</span>
-                  </v-chip>
+                    <v-sheet  class="pa-2">
+                    <v-chip :color="'#949494a9'"  label prepend-icon="mdi-account-circle">
+                      <span style="color: black">{{ user.playerName }}</span>
+                    </v-chip>
+                  </v-sheet>
+                    <!-- Current Clan -->
+                    <v-sheet class="pa-2">
+                    <v-chip :color="'#949494a9'" label >
+                      <span style="color: black">{{ user.currentClan }}</span>
+                    </v-chip>
+                    </v-sheet>
+                    <!-- Total Duration -->
+                    <v-sheet class="pa-2">
+                    <v-chip :color="'#FFE815'" label>
+                      <span style="color: black">{{ formatDuration(user.totalDuration) }}</span>
+                      <img src="C:\Users\SXWOLFMF\Desktop\bilder_COC\weird_clock.png" alt="Clock" class="clock-image">
+                    </v-chip>
+                    </v-sheet>
                 </v-btn>
+
               </v-list-item-title>
             </v-list-item-content>
+          </div>
             <!-- Expanded Content -->
             <v-expand-transition>
               <v-slide-y-transition>
@@ -151,8 +181,8 @@ export default {
       //Days
       result += `${remainingDays} Day${remainingDays === 1 ? "" : "s"} `;
 
-      if (remainingDays === 0) {
-        result = "History is private or less than 1 day";
+      if (remainingDays === 0 && months === 0 && years === 0) {
+        result = "< 1 day";
       }
 
       return result.trim();
@@ -167,5 +197,27 @@ export default {
 </script>
 
 <style scoped>
-/* Add your custom styles here */
+
+.app-bar-container :deep(.ql-editor)  {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  width: auto; /* Automatische Breite basierend auf dem Inhalt */
+}
+
+.chip-container-left :deep(.ql-editor) {
+  text-align: left;
+  flex: 1;
+}
+
+.chip-container-center :deep(.ql-editor) {
+  text-align: center;
+  flex: 1;
+}
+
+.chip-container-right :deep(.ql-editor) {
+  text-align: right;
+  flex: 1;
+}
+
 </style>
