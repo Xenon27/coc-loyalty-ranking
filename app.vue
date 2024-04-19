@@ -3,7 +3,7 @@
   <v-card class="mx-auto" color="grey-lighten-3" max-width="488">
     <v-layout>
       <v-app-bar
-        image="C:\Users\SXWOLFMF\Desktop\bilder_COC\AppBar2.png"
+        image=".\assets\AppBar.png"
         fixed
         scroll-behavior="hide"
         density="prominent"
@@ -64,7 +64,7 @@
                     <v-sheet class="pa-2">
                     <v-chip :color="'#FFE815'" label>
                       <span style="color: black">{{ formatDuration(user.totalDuration) }}</span>
-                      <img src="C:\Users\SXWOLFMF\Desktop\bilder_COC\weird_clock.png" alt="Clock" class="clock-image">
+                      <img src=".\assets\clock_icn.png" alt="Clock" class="clock-image">
                     </v-chip>
                     </v-sheet>
                 </v-btn>
