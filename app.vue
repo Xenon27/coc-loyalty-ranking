@@ -47,15 +47,19 @@
               <span :style="{ color: getRankingColor(index, user.playerName) }">{{ index + 1 }} = </span>
             </td>
             <td>
-                <v-icon icon="mdi-account-circle"></v-icon>
+                <v-chip :color="'#121212'">
+                <v-icon :color="'#ffffff'"icon="mdi-account-circle"></v-icon>
                 <span style="color: white">&nbsp;{{ user.playerName }}</span>
+                </v-chip>
             </td>
             <td>
                 <span style="color: white">{{ user.currentClan }}</span>
             </td>
             <td>
+              <v-chip :color="'#121212'">
                 <span style="color: #d4af37">{{ formatDuration(user.totalDuration) }} &nbsp; </span>
-                <img src=".\assets\clock_icn_dmode.png" alt="Clock" class="clock-image">
+                <img src=".\assets\clock_icn.png" alt="Clock" class="clock-image">
+              </v-chip>
             </td>
             <!-- Expanded Content -->
             <v-expand-transition>
@@ -195,13 +199,13 @@ export default {
       if (index === 0) {
         return "#d4af37"; // Gold color for the first index
       } else if (index === 1) {
-        return "#C0C0C0"; // Silver color for the second index
+        return "#ffffff"; // Silver color for the second index
       } else if (index === 2) {
-        return "#804000"; // Bronze color for the third index
+        return "#b47d49"; // Bronze color for the third index
       } else if (playerName === "FL • BluuBerry") {
         return "#4f86f7"; // Bronze color for the third index
       }else {
-        return "#ffffff"; // Default color for other indices
+        return "#5A5A5A"; // Default color for other indices
       }
     },
   },
