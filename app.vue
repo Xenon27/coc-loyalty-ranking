@@ -1,16 +1,20 @@
 <template>
   <!-- Main Content -->
+  <v-app dark>
   <v-container>
     <v-row justify="center">
       <v-col cols="12" 
       class="text-center" 
-      style="color: #ffffff;
-      text-shadow: 0 0 10px #4f86f7, 0 0 20px #4f86f7, 0 0 40px #4f86f7, 0 0 60px #4f86f7;"
       >
-        <h1 class="title-text">CLASH OF CLANS LOYALTY RANKING</h1>
+      <h1 class="title-text" 
+      style="color: #d4af37;"
+      >
+      CLASH OF CLANS LOYALTY RANKING
+    </h1>
       </v-col>
     </v-row>
   </v-container>
+  
 
   <v-container>
     <v-row justify="space-around">
@@ -32,33 +36,26 @@
         <thead>
           <tr>
             <th class="font-weight-bold" style="width: 5%;">Ranking</th>
-            <th class="font-weight-bold" style="width: 15%;">Player Name</th>
-            <th class="font-weight-bold" style="width: 15%;">Current Clan</th>
+            <th class="font-weight-bold" style="width: 5%;">Player Name</th>
+            <th class="font-weight-bold" style="width: 5%;">Current Clan</th>
             <th class="font-weight-bold" style="width: 5%;">Total Duration</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(user, index) in sortedFilteredUsers" :key="user.playerTag" @click="user.expanded = !user.expanded">
             <td>
-              <v-chip :color="getRankingColor(index, user.playerName)" label>
-                <span style="color: black">{{ index + 1 }} = </span>
-              </v-chip>
+              <span :style="{ color: getRankingColor(index, user.playerName) }">{{ index + 1 }} = </span>
             </td>
             <td>
-                <v-chip :color="'#949494a9'" label prepend-icon="mdi-account-circle">
-                  <span style="color: black">{{ user.playerName }}</span>
-                </v-chip>
+                <v-icon icon="mdi-account-circle"></v-icon>
+                <span style="color: white">&nbsp;{{ user.playerName }}</span>
             </td>
             <td>
-              <v-chip :color="'#949494a9'" label>
-                <span style="color: black">{{ user.currentClan }}</span>
-              </v-chip>
+                <span style="color: white">{{ user.currentClan }}</span>
             </td>
             <td>
-              <v-chip :color="'#FFE815'" label>
-                <span style="color: black">{{ formatDuration(user.totalDuration) }} &nbsp; </span>
-                <img src=".\assets\clock_icn.png" alt="Clock" class="clock-image">
-              </v-chip>
+                <span style="color: #d4af37">{{ formatDuration(user.totalDuration) }} &nbsp; </span>
+                <img src=".\assets\clock_icn_dmode.png" alt="Clock" class="clock-image">
             </td>
             <!-- Expanded Content -->
             <v-expand-transition>
@@ -66,7 +63,7 @@
                 <v-expand-panel v-if="user.expanded">
                   <v-card>
                     <v-card-text>
-                      <v-table>
+                      <v-table class="smaller-table">
                         <template v-slot:default>
                           <thead>
                             <tr>
@@ -92,6 +89,7 @@
       </template>
     </v-table>
   </v-container>
+</v-app>
 </template>
 
 <script>
@@ -195,9 +193,9 @@ export default {
     getRankingColor(index, playerName) {
       // Function to determine the color based on the index
       if (index === 0) {
-        return "yellow"; // Gold color for the first index
+        return "#d4af37"; // Gold color for the first index
       } else if (index === 1) {
-        return "gray"; // Silver color for the second index
+        return "#C0C0C0"; // Silver color for the second index
       } else if (index === 2) {
         return "#804000"; // Bronze color for the third index
       } else if (playerName === "FL • BluuBerry") {
@@ -211,5 +209,13 @@ export default {
 </script>
 
 <style>
+.smaller-table {
+  font-size: 12px; /* Adjust font size */
+}
+
+.smaller-table th,
+.smaller-table td {
+  padding: 5px; /* Adjust padding */
+}
 
 </style>
