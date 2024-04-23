@@ -35,9 +35,9 @@
       <template v-slot:default>
         <thead>
           <tr>
-            <th class="font-weight-bold" style="width: 5%;">Ranking</th>
-            <th class="font-weight-bold" style="width: 5%;">Player Name</th>
-            <th class="font-weight-bold" style="width: 5%;">Current Clan</th>
+            <th class="font-weight-bold" style="width: 3%;">Ranking</th>
+            <th class="font-weight-bold" style="width: 15%;">Player Name</th>
+            <th class="font-weight-bold" style="width: 15%;">Current Clan</th>
             <th class="font-weight-bold" style="width: 5%;">Total Duration</th>
           </tr>
         </thead>
