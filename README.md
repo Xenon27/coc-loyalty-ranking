@@ -1,25 +1,19 @@
 # coc-loyalty-ranking
 
-# Nuxt 3 Minimal Starter
-
-Look at the [Nuxt 3 documentation](https://nuxt.com/docs/getting-started/introduction) to learn more.
+An API and website for viewing the loyalty rankings of a clash of clans family. Meaning it checks how long int total a player has been part of any clan from the family.
 
 ## Setup
 
 Make sure to install the dependencies:
 
 ```bash
-# npm
 npm install
+```
 
-# pnpm
-pnpm install
+Also make sure to create a .env file with the Clash of Clans API token
 
-# yarn
-yarn install
-
-# bun
-bun install
+```
+COC_API_TOKEN="XYZ"
 ```
 
 ## Development Server
@@ -27,51 +21,10 @@ bun install
 Start the development server on `http://localhost:3000`:
 
 ```bash
-# npm
 npm run dev
-
-# pnpm
-pnpm run dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
 ```
 
-## Production
+## Live Product
 
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm run build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-# npm
-npm run preview
-
-# pnpm
-pnpm run preview
-
-# yarn
-yarn preview
-
-# bun
-bun run preview
-```
-
-Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
+To look at the live product please visit: 
+['https://coc-loyalty-ranking.live/'](https://coc-loyalty-ranking.live/)
