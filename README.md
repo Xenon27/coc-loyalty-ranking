@@ -26,4 +26,4 @@ npm run dev
 
 ## Live Product
 
-visit coc-loylaty-ranking.live
+visit `https://coc-loyalty-ranking.live/`
