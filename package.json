@@ -21,6 +21,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "nuxt-scheduler": "^0.1.9",
     "vite-plugin-vuetify": "^2.0.3",
     "vuetify": "^3.5.14"
   }
