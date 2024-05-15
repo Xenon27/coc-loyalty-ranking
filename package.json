@@ -9,7 +9,7 @@
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
     "start": "node .output/server/index.mjs",
-    "test": "vitest"
+    "test:unit": "vitest"
   },
   "dependencies": {
     "@mdi/font": "^7.4.47",
