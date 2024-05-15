@@ -53,7 +53,7 @@ async function getFamilyMembersDurations(listOfFamilyClans: Clan[]) {
   return familyMembers;
 }
 
-async function getClanMembers(clanTag: string) {
+export async function getClanMembers(clanTag: string) {
   try {
     const response = await axios.get(
       `https://api.clashofclans.com/v1/clans/%23${clanTag}/members`
@@ -71,7 +71,10 @@ async function getClanMembers(clanTag: string) {
   }
 }
 
-async function getPlayerHistory(playerTag: string, listOfFamilyClans: Clan[]) {
+export async function getPlayerHistory(
+  playerTag: string,
+  listOfFamilyClans: Clan[]
+) {
   try {
     const response = await axios.get(
       `https://api.clashofstats.com/players/${playerTag.slice(1)}/history/clans`
@@ -109,7 +112,7 @@ async function getPlayerHistory(playerTag: string, listOfFamilyClans: Clan[]) {
   }
 }
 
-function mapClan(clan: MemberClanHistory, listOfFamilyClans: Clan[]) {
+export function mapClan(clan: MemberClanHistory, listOfFamilyClans: Clan[]) {
   const clanName = listOfFamilyClans.find(
     (familyClan) => "#" + familyClan.clanTag === clan.tag
   )?.clanName;
@@ -125,7 +128,7 @@ function mapClan(clan: MemberClanHistory, listOfFamilyClans: Clan[]) {
   };
 }
 
-async function mapClanMembers(clans: Clan[]) {
+export async function mapClanMembers(clans: Clan[]) {
   const familyMembers: ReturnMember = [];
 
   await Promise.all(
@@ -148,7 +151,7 @@ async function mapClanMembers(clans: Clan[]) {
   return familyMembers;
 }
 
-async function calculateTotalDuration(familyMembers: ReturnMember) {
+export async function calculateTotalDuration(familyMembers: ReturnMember) {
   await Promise.all(
     familyMembers.map(async (member) => {
       member.totalDuration = member.history.reduce(

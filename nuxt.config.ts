@@ -10,6 +10,7 @@ export default defineNuxtConfig({
   },
   modules: [
     "nuxt-scheduler",
+    "@nuxt/test-utils/module",
     (_options, nuxt) => {
       nuxt.hooks.hook("vite:extendConfig", (config) => {
         // @ts-expect-error
