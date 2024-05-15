@@ -119,6 +119,7 @@ export default defineComponent({
       const response = await axios.get("api/FruchtLabor");
       this.users = response.data;
       this.filteredUsers = response.data;
+      document.title = "CLASH OF CLANS LOYALTY RANKING"; // Set document title
     } catch (error) {
       console.error(error);
     }
